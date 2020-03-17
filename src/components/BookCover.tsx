@@ -4,7 +4,8 @@ import {BookShelfChanger} from "./BookShelfChanger";
 import {Book} from "../models/Book";
 
 interface IProps {
-    book: Book
+    book: Book,
+    shelf: string
 }
 
 export class BookCover extends React.Component<IProps> {
