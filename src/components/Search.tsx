@@ -1,11 +1,29 @@
 import React from 'react';
 import {Link} from 'react-router-dom'
 import './../App.css';
+import {Book} from "../models/Book";
+import {BookCover} from "./BookCover";
+// import serializeForm from 'form-serialize';
 
-class Search extends React.Component {
+interface IProps {
+    books: Book[],
+    onHandleSearch: (searchTerm: string) => void
+}
+
+class Search extends React.Component<IProps> {
     state = {
-        showSearchPage: true
+        showSearchPage: true,
+        searchTerm: ''
     };
+
+    updateSearchTerm = (searchTerm: string) => {
+        this.setState(() => ({
+            searchTerm: searchTerm.trim()
+        }));
+        if (this.props && this.props.onHandleSearch)
+            this.props.onHandleSearch(searchTerm.trim())
+    };
+
     render() {
         return (
             <div className="search-books">
@@ -20,15 +38,21 @@ class Search extends React.Component {
                   However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                   you don't find a specific author or title. Every search is limited by search terms.
                 */}
-                        <input type="text" placeholder="Search by title or author"/>
-
+                    <input type="text"
+                           placeholder="Search by title or author"
+                           value={this.state.searchTerm}
+                           onChange={(event) => this.updateSearchTerm(event.target.value)}
+                    />
                     </div>
                 </div>
                 <div className="search-books-results">
-                    <ol className="books-grid"></ol>
+                    <ol className="books-grid">
+                        {this.props.books?.map( (book: Book) => (
+                            <BookCover key={book.id} book={book} shelf={book.id} />
+                        ))}
+                    </ol>
                 </div>
             </div>
-
         )
     }
 }

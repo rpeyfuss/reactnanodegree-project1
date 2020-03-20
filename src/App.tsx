@@ -2,25 +2,28 @@ import React from 'react';
 import './App.css';
 import {Link, Route} from 'react-router-dom';
 import Search from './components/Search';
-import * as BooksAPI from "./APIServices/BooksAPI";
 import {Book} from "./models/Book";
 import {BookCover} from "./components/BookCover";
+import * as BooksAPI from "./APIServices/BooksAPI";
+import * as BookService from "./services/book.service";
 
 interface IState {
     books:  any;
     keys: string[];
+    searchBooks: Book[];
 }
 
 class BooksApp extends React.Component {
     state: IState = {
         books: new Map<string, Book[]>(),
-        keys: []
+        keys: [],
+        searchBooks: []
     };
 
     componentDidMount(): void {
         BooksAPI.getAll()
             .then((books: Book[]) => {
-                const groupedBooks = this.groupBooksByBookshelf(books);
+                const groupedBooks = BookService.groupBooksByBookshelf(books);
                 const keys = Array.from(groupedBooks.keys());
                 this.setState(() => (
                     {books: groupedBooks, keys}
@@ -28,39 +31,24 @@ class BooksApp extends React.Component {
             )
     }
 
-    groupBooksByBookshelf( books: Book[]) {
-        let map = new Map();
-        books.forEach( book => {
-            const key = this.toTitleCase(book.shelf);
-            if (map.has(key)){
-                const values = map.get(key).concat(book);
-                map.set(key, values)
-            } else {
-                map.set(key, [book])
-            }
-        });
-        return map;
-    }
-    toTitleCase(str: string):string {
-        let titleCaseWord = str.substring(0,1).toUpperCase() + str.substring(1);
-        let i = 1;
-        while (i < titleCaseWord.length) {
-            if (titleCaseWord[i] === titleCaseWord[i].toUpperCase()){
-                titleCaseWord = titleCaseWord.substring(0,i) + " " + titleCaseWord.substring(i)
-                i++;
-            }
-            i++;
-        }
-        return titleCaseWord;
-    }
+    filterBooks = (str: string) => {
+        if (!str) this.setState(()=> ({searchBooks: []}));
+        BooksAPI.search(str.toUpperCase())
+            .then((books: any) => {
+                const foundBooks = books && books.error ? books.items : books;
+                this.setState(()=> ({searchBooks: foundBooks}))}
+            )
+    };
 
     render() {
-        const {books, keys} = this.state;
+        const {books, keys, searchBooks} = this.state;
         return (
             <div className="app">
-                <Route path="/search" className="search">
-                    <Search/>
+                <Route path="/search"  render={({ history }) => (
+                    <Search books={searchBooks} onHandleSearch={ this.filterBooks } />
+                    )}>
                 </Route>
+
                 <Route exact path="/">
                     {(books && keys)
                         ? (keys.map( (key) => (
