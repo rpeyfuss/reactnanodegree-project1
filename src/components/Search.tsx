@@ -1,13 +1,15 @@
 import React from 'react';
 import {Link} from 'react-router-dom'
 import './../App.css';
-import {Book} from "../models/Book";
+import {Book, Category, UpdateBookShelf} from "../models/Book";
 import {BookCover} from "./BookCover";
 // import serializeForm from 'form-serialize';
 
 interface IProps {
     books: Book[],
+    shelfCategories: Category[],
     onHandleSearch: (searchTerm: string) => void
+    onHandleUpdateBookShelf: (updateBookShelf: UpdateBookShelf) => void
 }
 
 class Search extends React.Component<IProps> {
@@ -16,7 +18,9 @@ class Search extends React.Component<IProps> {
         searchTerm: ''
     };
 
-    updateSearchTerm = (searchTerm: string) => {
+    updateSearchTerm = (event: any) => {
+        event.preventDefault();
+        const searchTerm = event.target.value;
         this.setState(() => ({
             searchTerm: searchTerm.trim()
         }));
@@ -24,7 +28,9 @@ class Search extends React.Component<IProps> {
             this.props.onHandleSearch(searchTerm.trim())
     };
 
+
     render() {
+        const {books, shelfCategories} = this.props;
         return (
             <div className="search-books">
                 <div className="search-books-bar">
@@ -41,14 +47,18 @@ class Search extends React.Component<IProps> {
                     <input type="text"
                            placeholder="Search by title or author"
                            value={this.state.searchTerm}
-                           onChange={(event) => this.updateSearchTerm(event.target.value)}
+                           onChange={(event) => this.updateSearchTerm(event)}
                     />
                     </div>
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
-                        {this.props.books?.map( (book: Book) => (
-                            <BookCover key={book.id} book={book} shelf={book.id} />
+                        {books?.map( (book: Book) => (
+                            <BookCover
+                                key={book.id}
+                                book={book} shelf={book.id}
+                                shelfCategories={shelfCategories}
+                                onHandleUpdateBookShelf={(e) => console.log(e)}/>
                         ))}
                     </ol>
                 </div>

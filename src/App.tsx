@@ -2,35 +2,41 @@ import React from 'react';
 import './App.css';
 import {Link, Route} from 'react-router-dom';
 import Search from './components/Search';
-import {Book} from "./models/Book";
+import {Book, Category, UpdateBookShelf} from "./models/Book";
 import {BookCover} from "./components/BookCover";
 import * as BooksAPI from "./APIServices/BooksAPI";
 import * as BookService from "./services/book.service";
 
 interface IState {
-    books:  any;
-    keys: string[];
+    books:  Book[];
+    groupedBooks: any,
+    shelfCategories: Category[];
     searchBooks: Book[];
 }
 
 class BooksApp extends React.Component {
     state: IState = {
-        books: new Map<string, Book[]>(),
-        keys: [],
+        books: [],
+        groupedBooks: new Map<string, Book[]>(),
+        shelfCategories: [],
         searchBooks: []
     };
 
     componentDidMount(): void {
+        this.getAllBooks()
+    }
+    getAllBooks(){
         BooksAPI.getAll()
             .then((books: Book[]) => {
                 const groupedBooks = BookService.groupBooksByBookshelf(books);
-                const keys = Array.from(groupedBooks.keys());
+                const shelfCategories = BookService.createCategories(Array.from(groupedBooks.keys())).concat([
+                    {key: "none", displayName: "None"}
+                ]);
                 this.setState(() => (
-                    {books: groupedBooks, keys}
+                    {books, groupedBooks, shelfCategories}
                 ))}
             )
     }
-
     filterBooks = (str: string) => {
         if (!str) this.setState(()=> ({searchBooks: []}));
         BooksAPI.search(str.toUpperCase())
@@ -39,30 +45,47 @@ class BooksApp extends React.Component {
                 this.setState(()=> ({searchBooks: foundBooks}))}
             )
     };
+    updateBookShelf = (updateBookShelf: UpdateBookShelf) => {
+        const {bookId, shelfCategory} = updateBookShelf;
+        BooksAPI.update(bookId, shelfCategory)
+            .then((res: any) => {
+                this.getAllBooks();
+            })
+    }
+
 
     render() {
-        const {books, keys, searchBooks} = this.state;
+        const {groupedBooks, shelfCategories, searchBooks} = this.state;
         return (
             <div className="app">
-                <Route path="/search"  render={({ history }) => (
-                    <Search books={searchBooks} onHandleSearch={ this.filterBooks } />
+                <Route path="/search"  render={() => (
+                    <Search books={searchBooks}
+                            shelfCategories={shelfCategories}
+                            onHandleSearch={(search) => this.filterBooks(search)}
+                            onHandleUpdateBookShelf={(e) => this.updateBookShelf(e)}
+                    />
                     )}>
                 </Route>
 
                 <Route exact path="/">
-                    {(books && keys)
-                        ? (keys.map( (key) => (
-                        <div key={key} className="list-books">
+                    {(groupedBooks && shelfCategories)
+                        ? (shelfCategories.map( (category) => (
+                        <div key={category.key} className="list-books">
                             <div className="list-books-title">
-                                <h1 >{key}</h1>
+                                <h1 >{category.displayName}</h1>
                             </div>
                             <div className="list-books-content">
                                 <div className="bookshelf">
-                                    <h2 className="bookshelf-title">{key}</h2>
+                                    <h2 className="bookshelf-title">{category.displayName}</h2>
                                     <div className="bookshelf-books">
                                         <ol className="books-grid">
-                                            {books.get(key).map( (book: Book) => (
-                                                <BookCover key={book.id} book={book} shelf={key} />
+                                            {groupedBooks.get(category.key)?.map( (book: Book) => (
+                                                <BookCover key={book.id}
+                                                           book={book}
+                                                           shelf={category.displayName}
+                                                           shelfCategories={shelfCategories}
+                                                           onHandleUpdateBookShelf={(e) => this.updateBookShelf(e)}
+                                                />
                                             ))}
                                         </ol>
                                     </div>

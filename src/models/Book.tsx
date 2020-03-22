@@ -44,3 +44,13 @@ export interface ReadingModes {
     text: boolean;
     image: boolean;
 }
+
+export interface Category {
+    key: string;
+    displayName: string;
+}
+
+export interface UpdateBookShelf {
+    bookId: string,
+    shelfCategory: string
+}

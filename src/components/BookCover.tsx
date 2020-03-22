@@ -1,16 +1,24 @@
 import React from 'react';
 import './../App.css';
 import {BookShelfChanger} from "./BookShelfChanger";
-import {Book} from "../models/Book";
+import {Book, Category, UpdateBookShelf} from "../models/Book";
 
 interface IProps {
     book: Book,
-    shelf: string
+    shelf: string,
+    shelfCategories: Category[],
+    onHandleUpdateBookShelf: (updateBookSelf: UpdateBookShelf) => void
 }
 
 export class BookCover extends React.Component<IProps> {
+
+    updateShelf = (shelf: string) => {
+        const updateBookShelf = { bookId: this.props.book.id, shelfCategory: shelf };
+        this.props.onHandleUpdateBookShelf(updateBookShelf);
+    };
+
     render() {
-        const {book} = this.props;
+        const {book, shelfCategories, shelf} = this.props;
         return (
                 <li>
                     <div className="book">
@@ -22,7 +30,9 @@ export class BookCover extends React.Component<IProps> {
                                      backgroundImage: `url(${book?.imageLinks?.thumbnail})`}}
                             >
                             </div>
-                            <BookShelfChanger />
+                            <BookShelfChanger shelfCategories={shelfCategories}
+                                              shelf={shelf}
+                                              onHandleChange={ (shelf) => this.updateShelf(shelf)} />
                         </div>
                         <div className="book-title">{book?.title}</div>
                         <div className="book-authors">
