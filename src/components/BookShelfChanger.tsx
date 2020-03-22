@@ -18,10 +18,14 @@ export class BookShelfChanger extends React.Component<IProps> {
         return (
         <div className="book-shelf-changer">
             <select
+                value={this.props.shelf}
                 onChange={(event) => this.updateShelf(event.target.value)}>
                 <option value="move" disabled>Move to...</option>
-                { this.props.shelfCategories.map( (category: Category) => (
-                    <option key={category.key} value={category.key}>{category.displayName}</option>
+                {this.props.shelfCategories.map( (category: Category) => (
+                <option
+                    key={category.key}
+                    value={category.key}>{category.displayName}
+                </option>
                 ))}
             </select>
         </div>

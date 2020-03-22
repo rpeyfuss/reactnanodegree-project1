@@ -3,20 +3,20 @@ import './App.css';
 import {Link, Route} from 'react-router-dom';
 import Search from './components/Search';
 import {Book, Category, UpdateBookShelf} from "./models/Book";
-import {BookCover} from "./components/BookCover";
+import {BookList} from "./components/BookList";
 import * as BooksAPI from "./APIServices/BooksAPI";
 import * as BookService from "./services/book.service";
 
 interface IState {
-    books:  Book[];
-    groupedBooks: any,
+    booksByIdMap: any;
+    groupedBooks: any;
     shelfCategories: Category[];
     searchBooks: Book[];
 }
 
 class BooksApp extends React.Component {
     state: IState = {
-        books: [],
+        booksByIdMap: new Map<string, Book>(),
         groupedBooks: new Map<string, Book[]>(),
         shelfCategories: [],
         searchBooks: []
@@ -29,11 +29,12 @@ class BooksApp extends React.Component {
         BooksAPI.getAll()
             .then((books: Book[]) => {
                 const groupedBooks = BookService.groupBooksByBookshelf(books);
+                const booksByIdMap = BookService.booksById(books);
                 const shelfCategories = BookService.createCategories(Array.from(groupedBooks.keys())).concat([
                     {key: "none", displayName: "None"}
                 ]);
                 this.setState(() => (
-                    {books, groupedBooks, shelfCategories}
+                    {booksByIdMap, groupedBooks, shelfCategories}
                 ))}
             )
     }
@@ -42,7 +43,8 @@ class BooksApp extends React.Component {
         BooksAPI.search(str.toUpperCase())
             .then((books: any) => {
                 const foundBooks = books && books.error ? books.items : books;
-                this.setState(()=> ({searchBooks: foundBooks}))}
+                const updatedSearchBooks = BookService.updateShelfWithExistingShelf(this.state.booksByIdMap, foundBooks);
+                this.setState(()=> ({searchBooks: updatedSearchBooks}))}
             )
     };
     updateBookShelf = (updateBookShelf: UpdateBookShelf) => {
@@ -51,14 +53,14 @@ class BooksApp extends React.Component {
             .then((res: any) => {
                 this.getAllBooks();
             })
-    }
+    };
 
 
     render() {
         const {groupedBooks, shelfCategories, searchBooks} = this.state;
         return (
             <div className="app">
-                <Route path="/search"  render={() => (
+                <Route path="/search" render={() => (
                     <Search books={searchBooks}
                             shelfCategories={shelfCategories}
                             onHandleSearch={(search) => this.filterBooks(search)}
@@ -67,37 +69,34 @@ class BooksApp extends React.Component {
                     )}>
                 </Route>
 
-                <Route exact path="/">
-                    {(groupedBooks && shelfCategories)
+                <Route exact path="/" render={() => (
+                    (groupedBooks && shelfCategories)
                         ? (shelfCategories.map( (category) => (
-                        <div key={category.key} className="list-books">
-                            <div className="list-books-title">
-                                <h1 >{category.displayName}</h1>
-                            </div>
-                            <div className="list-books-content">
-                                <div className="bookshelf">
-                                    <h2 className="bookshelf-title">{category.displayName}</h2>
-                                    <div className="bookshelf-books">
-                                        <ol className="books-grid">
-                                            {groupedBooks.get(category.key)?.map( (book: Book) => (
-                                                <BookCover key={book.id}
-                                                           book={book}
-                                                           shelf={category.displayName}
-                                                           shelfCategories={shelfCategories}
-                                                           onHandleUpdateBookShelf={(e) => this.updateBookShelf(e)}
-                                                />
-                                            ))}
-                                        </ol>
+                            groupedBooks?.get(category.key)?.length > 0
+                            ? (
+                                <div key={category.key} className="list-books">
+                                    <div className="list-books-title">
+                                        <h1 >{category.displayName}</h1>
+                                    </div>
+                                    <BookList
+                                        books={groupedBooks.get(category.key)}
+                                        category={category}
+                                        shelfCategories={shelfCategories}
+                                        onHandleUpdateBookShelf={(updateBookShelf: UpdateBookShelf) =>
+                                            this.updateBookShelf(updateBookShelf)}
+                                    />
+                                    <div className="open-search">
+                                        <Link to="/search" onClick={() => this.setState(
+                                            {showSearchPage: true, searchBooks: []})}>Add a book</Link>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="open-search">
-                                <Link to="/search" onClick={() => this.setState({showSearchPage: true})}>Add a book</Link>
-                            </div>
-                        </div>
-                        )))
-                        : (<p>Loading</p>)
-                    }
+                                )
+                                : <div key={category.key}/>
+                            )))
+                        : (
+                            <p className="loading">Loading...<div className="loader"/></p>
+                        )
+                )}>
                 </Route>
             </div>
         )

@@ -5,7 +5,6 @@ import {Book, Category, UpdateBookShelf} from "../models/Book";
 
 interface IProps {
     book: Book,
-    shelf: string,
     shelfCategories: Category[],
     onHandleUpdateBookShelf: (updateBookSelf: UpdateBookShelf) => void
 }
@@ -18,30 +17,30 @@ export class BookCover extends React.Component<IProps> {
     };
 
     render() {
-        const {book, shelfCategories, shelf} = this.props;
+        const {book, shelfCategories} = this.props;
         return (
-                <li>
-                    <div className="book">
-                        <div className="book-top">
-                            <div className="book-cover"
-                                 style={{
-                                     width: 128,
-                                     height: 193,
-                                     backgroundImage: `url(${book?.imageLinks?.thumbnail})`}}
-                            >
-                            </div>
-                            <BookShelfChanger shelfCategories={shelfCategories}
-                                              shelf={shelf}
-                                              onHandleChange={ (shelf) => this.updateShelf(shelf)} />
+            <li>
+                <div className="book">
+                    <div className="book-top">
+                        <div className="book-cover"
+                             style={{
+                                 width: 128,
+                                 height: 193,
+                                 backgroundImage: `url(${book?.imageLinks?.thumbnail})`}}
+                        >
                         </div>
-                        <div className="book-title">{book?.title}</div>
-                        <div className="book-authors">
-                            {book?.authors?.map ((author) => (
-                                <span key={author}>{author}</span>
-                            ))}
-                        </div>
+                        <BookShelfChanger shelfCategories={shelfCategories}
+                                          shelf={book.shelf ? book.shelf : "none"}
+                                          onHandleChange={ (shelf:string) => this.updateShelf(shelf)} />
                     </div>
-                </li>
+                    <div className="book-title">{book?.title}</div>
+                    <div className="book-authors">
+                        {book?.authors?.map ((author) => (
+                            <span key={author}>{`${author} `}</span>
+                        ))}
+                    </div>
+                </div>
+            </li>
         )
     }
 }

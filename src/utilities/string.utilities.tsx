@@ -10,4 +10,4 @@ export const toTitleCase = (str: string) => {
         i++;
     }
     return titleCaseWord;
-}
+};

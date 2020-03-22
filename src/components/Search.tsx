@@ -3,7 +3,6 @@ import {Link} from 'react-router-dom'
 import './../App.css';
 import {Book, Category, UpdateBookShelf} from "../models/Book";
 import {BookCover} from "./BookCover";
-// import serializeForm from 'form-serialize';
 
 interface IProps {
     books: Book[],
@@ -18,16 +17,13 @@ class Search extends React.Component<IProps> {
         searchTerm: ''
     };
 
-    updateSearchTerm = (event: any) => {
-        event.preventDefault();
-        const searchTerm = event.target.value;
+    updateSearchTerm = (searchTerm: string) => {
         this.setState(() => ({
             searchTerm: searchTerm.trim()
         }));
         if (this.props && this.props.onHandleSearch)
             this.props.onHandleSearch(searchTerm.trim())
     };
-
 
     render() {
         const {books, shelfCategories} = this.props;
@@ -47,7 +43,7 @@ class Search extends React.Component<IProps> {
                     <input type="text"
                            placeholder="Search by title or author"
                            value={this.state.searchTerm}
-                           onChange={(event) => this.updateSearchTerm(event)}
+                           onChange={(event) => this.updateSearchTerm(event.target.value)}
                     />
                     </div>
                 </div>
@@ -56,9 +52,11 @@ class Search extends React.Component<IProps> {
                         {books?.map( (book: Book) => (
                             <BookCover
                                 key={book.id}
-                                book={book} shelf={book.id}
+                                book={book}
                                 shelfCategories={shelfCategories}
-                                onHandleUpdateBookShelf={(e) => console.log(e)}/>
+                                onHandleUpdateBookShelf={(updateBookShelf: UpdateBookShelf) => (
+                                    this.props.onHandleUpdateBookShelf(updateBookShelf)
+                                )}/>
                         ))}
                     </ol>
                 </div>
