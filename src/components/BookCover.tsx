@@ -1,7 +1,7 @@
 import React from 'react';
 import './../App.css';
 import {BookShelfChanger} from "./BookShelfChanger";
-import {Book, Category, UpdateBookShelf} from "../models/Book";
+import {Book, Category, UpdateBookShelf} from "../models/BookModel";
 
 interface IProps {
     book: Book,

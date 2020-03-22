@@ -1,13 +1,13 @@
 import React from 'react';
 import {Link} from 'react-router-dom'
 import './../App.css';
-import {Book, Category, UpdateBookShelf} from "../models/Book";
+import {Book, Category, UpdateBookShelf} from "../models/BookModel";
 import {BookCover} from "./BookCover";
 
 interface IProps {
-    books: Book[],
-    shelfCategories: Category[],
-    onHandleSearch: (searchTerm: string) => void
+    books: Book[];
+    shelfCategories: Category[];
+    onHandleSearch: (searchTerm: string) => void;
     onHandleUpdateBookShelf: (updateBookShelf: UpdateBookShelf) => void
 }
 

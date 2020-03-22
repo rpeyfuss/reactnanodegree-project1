@@ -1,5 +1,6 @@
 
 export const toTitleCase = (str: string) => {
+    if (!str) return "";
     let titleCaseWord = str.substring(0,1).toUpperCase() + str.substring(1);
     let i = 1;
     while (i < titleCaseWord.length) {

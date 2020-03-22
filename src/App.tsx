@@ -2,10 +2,10 @@ import React from 'react';
 import './App.css';
 import {Link, Route} from 'react-router-dom';
 import Search from './components/Search';
-import {Book, Category, UpdateBookShelf} from "./models/Book";
+import {Book, Category, UpdateBookShelf} from "./models/BookModel";
 import {BookList} from "./components/BookList";
 import * as BooksAPI from "./APIServices/BooksAPI";
-import * as BookService from "./services/book.service";
+import * as BookService from "./services/BookService";
 
 interface IState {
     booksByIdMap: any;

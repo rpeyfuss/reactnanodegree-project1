@@ -1,11 +1,11 @@
 import React from 'react';
 import './../App.css';
-import {Category} from "../models/Book";
+import {Category} from "../models/BookModel";
 
 
 interface IProps {
-    shelfCategories: Category[],
-    shelf: string,
+    shelfCategories: Category[];
+    shelf: string;
     onHandleChange: (category: string) => void
 }
 export class BookShelfChanger extends React.Component<IProps> {

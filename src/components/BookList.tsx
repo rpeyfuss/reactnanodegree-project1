@@ -1,12 +1,12 @@
 import React from 'react';
 import './../App.css';
-import {Book, Category, UpdateBookShelf} from "../models/Book";
+import {Book, Category, UpdateBookShelf} from "../models/BookModel";
 import {BookCover} from "./BookCover";
 
 interface IProps {
-    books: any,
-    category: Category,
-    shelfCategories: Category[],
+    books: any;
+    category: Category;
+    shelfCategories: Category[];
     onHandleUpdateBookShelf: (updateBookSelf: UpdateBookShelf) => void
 }
 

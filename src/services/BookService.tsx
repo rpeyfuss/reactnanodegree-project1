@@ -1,5 +1,5 @@
-import {Book, Category} from "../models/Book";
-import * as StringUtilities from "../utilities/string.utilities";
+import {Book, Category} from "../models/BookModel";
+import * as StringUtilities from "../utilities/StringUtilities";
 
 export const groupBooksByBookshelf = ( books: Book[])  => {
     let map = new Map();
