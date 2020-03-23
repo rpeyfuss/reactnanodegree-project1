@@ -22,14 +22,29 @@ To get started developing right away:
 │   ├── favicon.ico # React Icon, You may change if you wish.
 │   └── index.html # DO NOT MODIFY
 └── src
+    ├── APIServices
+    |   ├── BooksAPI.tsx
+    ├── components
+    |   ├── BookCover.tsx
+    |   ├── BookList.tsx
+    |   ├── BookShelfChanger.tsx
+    |   ├── Search.tsx
+    ├── icons # Helpful images for your app. Use at your discretion.
+    │   ├── add.svg
+    │   ├── arrow-back.svg
+    │   └── arrow-drop-down.svg 
+    ├── models
+    |   ├── BookModels.tsx
+    ├── services
+    |   ├── BookService.test.tsx
+    |   ├── BookService.tsx
+    ├── utilities
+    |   ├── StringUtilities.test.tsx
+    |   ├── StringUtilities.tsx
     ├── App.css # Styles for your app. Feel free to customize this as you desire.
     ├── App.js # This is the root of your app. Contains static HTML right now.
     ├── App.test.js # Used for testing. Provided with Create React App. Testing is encouraged, but not required.
     ├── BooksAPI.js # A JavaScript API for the provided Udacity backend. Instructions for the methods are below.
-    ├── icons # Helpful images for your app. Use at your discretion.
-    │   ├── add.svg
-    │   ├── arrow-back.svg
-    │   └── arrow-drop-down.svg
     ├── index.css # Global styles. You probably won't need to change anything here.
     └── index.js # You should not need to modify this file. It is used for DOM rendering only.
 ```
@@ -60,10 +75,10 @@ getAll()
 Method Signature:
 
 ```js
-update(book, shelf)
+update(bookId, shelf)
 ```
 
-* book: `<Object>` containing at minimum an `id` attribute
+* bookId: `<String>` containing the id of the book
 * shelf: `<String>` contains one of ["wantToRead", "currentlyReading", "read"]  
 * Returns a Promise which resolves to a JSON object containing the response data of the POST request
 
