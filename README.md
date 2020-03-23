@@ -1,3 +1,5 @@
+# reactnanodegree-project1
+This is the first project in Udacity's React Nanodegree.
 
 # MyReads Project
 
@@ -106,7 +108,4 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
 
 For details, check out [CONTRIBUTING.md](CONTRIBUTING.md).
-
-# reactnanodegree-project1
-This is the first project in Udacity's React Nanodegree.
 
